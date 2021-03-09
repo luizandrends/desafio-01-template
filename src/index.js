@@ -73,15 +73,57 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { title, deadline } = request.body;
+  const { id } = request.params;
+  const { username } = request.headers;
+
+
+  const findUserIndex = users.findIndex(user => user.username === username);
+
+  const findTodoIndex = users[findUserIndex].todos.findIndex(todo => todo.id === id);
+
+  if(findTodoIndex < 0) {
+    return response.status(404).json({ error: 'Todo not found' });
+  }
+
+  users[findUserIndex].todos[findTodoIndex].title = title;
+  users[findUserIndex].todos[findTodoIndex].deadline = deadline;
+
+  return response.json(users[findUserIndex].todos[findTodoIndex]);
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { id } = request.params;
+  const { username } = request.headers;
+
+  const findUserIndex = users.findIndex(user => user.username === username);
+
+  const findTodoIndex = users[findUserIndex].todos.findIndex(todo => todo.id === id);
+
+  if(findTodoIndex < 0) {
+    return response.status(404).json({ error: 'Todo not found' });
+  }
+
+  users[findUserIndex].todos[findTodoIndex].done = true;
+
+  return response.json(users[findUserIndex].todos[findTodoIndex]);
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { id } = request.params;
+  const { username } = request.headers;
+  
+  const findUserIndex = users.findIndex(user => user.username === username);
+
+  const findTodoIndex = users[findUserIndex].todos.findIndex(todo => todo.id === id);
+
+  if(findTodoIndex < 0) {
+    return response.status(404).json({ error: 'Todo not found' });
+  }
+
+  users[findUserIndex].todos.splice(id, 1);
+
+  return response.status(204).json(users[findUserIndex].todos);
 });
 
 module.exports = app;
